@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:text="@string/init_value"
         android:textColor="@color/black"
-        android:textSize="110sp"
+        android:textSize="140sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

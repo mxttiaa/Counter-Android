@@ -31,8 +31,13 @@ public class MainActivity extends AppCompatActivity {
 
         Button plusBotton = findViewById(R.id.plus);
         plusBotton.setOnClickListener(v ->{
-            value += gap;
-            textValue.setText(String.valueOf(value)); //si può fare anche value + ""
+            if(value + gap <= 99999){
+                value += gap;
+                textValue.setText(String.valueOf(value)); //si può fare anche value + ""
+            }
+            else{
+                Toast.makeText(MainActivity.this, "Hai raggiunto il massimo.", Toast.LENGTH_SHORT).show();
+            }
         });
 
         Button minusBotton = findViewById(R.id.minus);
