@@ -3,4 +3,5 @@
     <string name="init_value">0</string>
     <string name="addValue">+</string>
     <string name="minusValue">-</string>
+    <string name="reset">Reset</string>
 </resources>

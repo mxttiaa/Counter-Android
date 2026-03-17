@@ -42,9 +42,14 @@ public class MainActivity extends AppCompatActivity {
                 textValue.setText(String.valueOf(value)); //si può fare anche value + ""
             }
             else{
-                Toast.makeText(MainActivity.this, "Hai già raggiunto lo zero.", Toast.LENGTH_SHORT).show(); //non mi convince questa frase
+                Toast.makeText(MainActivity.this, "Hai già raggiunto lo zero.", Toast.LENGTH_SHORT).show();
             }
+        });
 
+        Button resetBotton = findViewById(R.id.resetButt);
+        resetBotton.setOnClickListener(v ->{
+            value = 0;
+            textValue.setText(String.valueOf(value));
         });
     }
 
