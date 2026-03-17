@@ -3,6 +3,7 @@ package com.mxttiaa.mcounter;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +33,18 @@ public class MainActivity extends AppCompatActivity {
         plusBotton.setOnClickListener(v ->{
             value += gap;
             textValue.setText(String.valueOf(value)); //si può fare anche value + ""
+        });
+
+        Button minusBotton = findViewById(R.id.minus);
+        minusBotton.setOnClickListener(v ->{
+            if(value - gap >= 0){
+                value -= gap;
+                textValue.setText(String.valueOf(value)); //si può fare anche value + ""
+            }
+            else{
+                Toast.makeText(MainActivity.this, "Hai già raggiunto lo zero.", Toast.LENGTH_SHORT).show(); //non mi convince questa frase
+            }
+
         });
     }
 
