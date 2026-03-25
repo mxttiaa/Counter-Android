@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/honeydew"
     tools:context=".MainActivity">
 
     <TextView
@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/init_value"
-        android:textColor="@color/black"
+        android:textColor="@color/deepSpaceBlue"
         android:textSize="140sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,6 +36,12 @@
         android:insetTop="0dp"
         android:insetRight="0dp"
         android:insetBottom="0dp"
+
+        app:backgroundTint="@color/steelBlue"
+        app:iconTint="@color/deepSpaceBlue"
+        app:strokeWidth="5dp"
+        app:strokeColor="@color/deepSpaceBlue"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/valueCounter" />
@@ -55,6 +61,12 @@
         android:insetTop="0dp"
         android:insetRight="0dp"
         android:insetBottom="0dp"
+
+        app:backgroundTint="@color/steelBlue"
+        app:iconTint="@color/deepSpaceBlue"
+        app:strokeWidth="5dp"
+        app:strokeColor="@color/deepSpaceBlue"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/plus"
@@ -75,6 +87,12 @@
         android:insetTop="0dp"
         android:insetRight="0dp"
         android:insetBottom="0dp"
+
+        app:backgroundTint="@color/strawberryRed"
+        app:iconTint="@color/deepSpaceBlue"
+        app:strokeWidth="3dp"
+        app:strokeColor="@color/deepSpaceBlue"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="15dp"

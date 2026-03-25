@@ -2,4 +2,16 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="red">#FF0000</color>
+    <color name="strawberryRed">#E63946</color>
+    <color name="honeydew">#F1FAEE</color>
+    <color name="frostedBlue">#A8DADC</color>
+    <color name="steelBlue">#457B9D</color>
+    <color name="deepSpaceBlue">#1D3557</color>
+
+    <color name="lightStrawberry">#FAD4D7</color>
+    <color name="lightSteelBlue">#D9E6F0</color>
+    <color name="lightSand">#FDF5E6</color>
+    <color name="lightLavender">#E8EAF6</color>
+    <color name="lightMint">#E0F2F1</color>
 </resources>
