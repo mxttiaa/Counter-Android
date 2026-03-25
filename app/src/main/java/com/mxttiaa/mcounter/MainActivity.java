@@ -39,24 +39,17 @@ public class MainActivity extends AppCompatActivity {
 
         TextView textValue = findViewById(R.id.valueCounter);
 
+        View mainLayout = findViewById(R.id.main); //Colleghiamo il layout principale per potergli cambiare colore
+
         Button plusBotton = findViewById(R.id.plus);
         plusBotton.setOnClickListener(v ->{
             if(value + gap <= 99999){
                 value += gap;
                 textValue.setText(String.valueOf(value)); //si può fare anche value + ""
 
-                View mainLayout = findViewById(R.id.main); //Colleghiamo il layout principale per potergli cambiare colore
+                int myColor = 0;
+                changeColorBackg(value, myColor, mainLayout);
 
-                if (value > 0 && value % 10 == 0) {
-                    java.util.Random random = new java.util.Random(); //oggetto random
-
-                    int idxCoolor = random.nextInt(lightbackg.length); //numero casuale tra 0 e colori totali
-
-                    int myColor = lightbackg[idxCoolor]; //colore estratto
-
-                    // Nota: in Android moderno serve "ContextCompat" per tradurre il colore in un formato leggibile dallo schermo
-                    mainLayout.setBackgroundColor(androidx.core.content.ContextCompat.getColor(MainActivity.this, myColor)); //applicazione del colore sullo sfondo
-                }
             }
             else{
                 Toast.makeText(MainActivity.this, "Hai raggiunto il massimo.", Toast.LENGTH_SHORT).show();
@@ -68,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
             if(value - gap >= 0){
                 value -= gap;
                 textValue.setText(String.valueOf(value)); //si può fare anche value + ""
+                int myColor = 0;
+                changeColorBackg(value, myColor, mainLayout);
             }
             else{
                 Toast.makeText(MainActivity.this, "Hai già raggiunto lo zero.", Toast.LENGTH_SHORT).show();
@@ -78,7 +73,20 @@ public class MainActivity extends AppCompatActivity {
         resetBotton.setOnClickListener(v ->{
             value = 0;
             textValue.setText(String.valueOf(value));
+            mainLayout.setBackgroundColor(androidx.core.content.ContextCompat.getColor(MainActivity.this, lightbackg[0]));
         });
     }
 
+    private void changeColorBackg(int value, int myColor, View mainLayout){
+        if (value > 0 && value % 10 == 0) {
+            java.util.Random random = new java.util.Random(); //oggetto random
+
+            int idxCoolor = random.nextInt(lightbackg.length); //numero casuale tra 0 e colori totali
+
+            myColor = lightbackg[idxCoolor]; //colore estratto
+
+            // Nota: in Android moderno serve "ContextCompat" per tradurre il colore in un formato leggibile dallo schermo
+            mainLayout.setBackgroundColor(androidx.core.content.ContextCompat.getColor(MainActivity.this, myColor)); //applicazione del colore sullo sfondo
+        }
+    }
 }
