@@ -14,4 +14,15 @@
     <color name="lightSand">#FDF5E6</color>
     <color name="lightLavender">#E8EAF6</color>
     <color name="lightMint">#E0F2F1</color>
+
+    <color name="lightPeach">#FFF0E0</color>
+    <color name="lightLemon">#FFF9C4</color>
+    <color name="lightSage">#E8F5E9</color>
+    <color name="lightSky">#E1F5FE</color>
+    <color name="lightLilac">#F3E5F5</color>
+    <color name="lightRose">#FCE4EC</color>
+    <color name="lightApricot">#FFE0B2</color>
+    <color name="lightCloud">#ECEFF1</color>
+    <color name="lightHoney">#FFF8E1</color>
+    <color name="lightVanilla">#F5F5DC</color>
 </resources>

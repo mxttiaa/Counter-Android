@@ -23,7 +23,17 @@ public class MainActivity extends AppCompatActivity {
             R.color.lightSteelBlue,
             R.color.lightSand,
             R.color.lightLavender,
-            R.color.lightMint
+            R.color.lightMint,
+            R.color.lightPeach,
+            R.color.lightLemon,
+            R.color.lightSage,
+            R.color.lightSky,
+            R.color.lightLilac,
+            R.color.lightRose,
+            R.color.lightApricot,
+            R.color.lightCloud,
+            R.color.lightHoney,
+            R.color.lightVanilla
     };
 
     // In questo modo "sopravvive" tra un click e l'altro
@@ -102,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
             mainLayout.setBackgroundColor(androidx.core.content.ContextCompat.getColor(MainActivity.this, myColor)); //applicazione del colore sullo sfondo
 
             // Questa riga stampa un messaggio segreto nella console di Android Studio
-            android.util.Log.d("DEBUG_COLORE", "Indice estratto: " + idxCoolor);
+            //android.util.Log.d("DEBUG_COLORE", "Indice estratto: " + idxCoolor);
         }
     }
 }
