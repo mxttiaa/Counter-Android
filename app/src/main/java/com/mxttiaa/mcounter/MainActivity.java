@@ -26,6 +26,10 @@ public class MainActivity extends AppCompatActivity {
             R.color.lightMint
     };
 
+    // In questo modo "sopravvive" tra un click e l'altro
+    private int lastIdxCloolor = -1;
+    private final java.util.Random random = new java.util.Random();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,17 +86,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void changeColorBackg(int value, View mainLayout){
         if (value > 0 && value % 10 == 0) {
-            java.util.Random random = new java.util.Random();
-            //oggetto random
+            int idxCoolor;
 
-            int idxCoolor = random.nextInt(lightbackg.length);
-            //numero casuale tra 0 e colori totali
+            do{
+                //numero casuale tra 0 e colori totali
+                idxCoolor = random.nextInt(lightbackg.length);
+            }while(idxCoolor == lastIdxCloolor);
+
+            lastIdxCloolor = idxCoolor;
 
             int myColor = lightbackg[idxCoolor];
             //colore estratto
 
             // Nota: in Android moderno serve "ContextCompat" per tradurre il colore in un formato leggibile dallo schermo
             mainLayout.setBackgroundColor(androidx.core.content.ContextCompat.getColor(MainActivity.this, myColor)); //applicazione del colore sullo sfondo
+
+            // Questa riga stampa un messaggio segreto nella console di Android Studio
+            android.util.Log.d("DEBUG_COLORE", "Indice estratto: " + idxCoolor);
         }
     }
 }
