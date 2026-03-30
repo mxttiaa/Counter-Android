@@ -1,4 +1,4 @@
-# Counter App (Versione 1.0)
+# Counter App (Versione 1.0.1)
 
 Un'applicazione Android dal design moderno sviluppata come progetto pratico per imparare le basi della programmazione Android con Java e XML.
 
@@ -12,5 +12,7 @@ Un'applicazione Android dal design moderno sviluppata come progetto pratico per 
 ## Design
 I colori sono stati studiati per garantire un alto contrasto e una perfetta leggibilità.
 
-## Download
-[Avvia il download](https://github.com/mxttiaa/Counter-Android/releases/download/v1.0/Counter-v1.0.apk)
+## Ultimo Aggiornamento: v1.0.1
+- **Logica Colori:** Implementato sistema per evitare la ripetizione dello stesso sfondo consecutivamente.
+- **Palette:** Aggiunti 10 nuovi colori pastello.
+- **Download:** Puoi scaricare l'ultimo APK dalla sezione [Releases](https://github.com/mxttiaa/Counter-Android/releases).
