@@ -36,6 +36,8 @@ android {
 }
 
 dependencies {
+    // Questa libreria permette di usare la Splash Screen moderna anche su Android vecchi
+    implementation("androidx.core:core-splashscreen:1.2.0")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
