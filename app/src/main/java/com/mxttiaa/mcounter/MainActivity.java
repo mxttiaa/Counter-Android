@@ -12,8 +12,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class MainActivity extends AppCompatActivity {
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 
+public class MainActivity extends AppCompatActivity {
     int value = 0;
     int gap = 1;
 
@@ -90,11 +92,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         Button resetBotton = findViewById(R.id.resetButt);
-        resetBotton.setOnClickListener(v ->{
-            value = 0;
-            textValue.setText(String.valueOf(value));
-            mainLayout.setBackgroundColor(androidx.core.content.ContextCompat.getColor(MainActivity.this, lightbackg[0]));
-        });
+        resetBotton.setOnClickListener(v -> showDialogReset(mainLayout, textValue));
     }
 
     private void changeColorBackg(int value, View mainLayout){
@@ -118,4 +116,37 @@ public class MainActivity extends AppCompatActivity {
             //android.util.Log.d("DEBUG_COLORE", "Indice estratto: " + idxCoolor);
         }
     }
+
+    private void showDialogReset(View mainLayout, TextView textValue){
+        // Il Builder ci aiuta a costruire la finestra passo dopo passo
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Conferma Reset");
+        builder.setMessage("Sei sicuro di voler resettare il contatore?");
+
+        // Impostiamo il pulsante di conferma (positivo)
+        builder.setPositiveButton("Conferma", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which){
+                value = 0;
+                textValue.setText(String.valueOf(value));
+                mainLayout.setBackgroundColor(androidx.core.content.ContextCompat.getColor(MainActivity.this, lightbackg[0]));
+            }
+        });
+
+        // Impostiamo il pulsante per annullare (negativo)
+        builder.setNegativeButton("Annulla", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Chiudiamo semplicemente il dialog senza fare nulla
+                dialog.dismiss();
+            }
+        });
+
+        // Creiamo e mostriamo a schermo la finestra
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
 }
