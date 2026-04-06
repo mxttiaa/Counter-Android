@@ -7,4 +7,18 @@
     android:layout_height="match_parent"
     tools:context=".SettingsActivity">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarSettings"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:elevation="4dp"
+        android:background="@color/steelBlue"
+        app:title="Impostazioni"
+        app:titleTextColor="@color/deepSpaceBlue"
+
+        app:navigationIcon="@drawable/outline_arrow_back_ios_new_24"
+        app:navigationIconTint="@color/deepSpaceBlue"
+
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
