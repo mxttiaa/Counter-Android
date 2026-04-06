@@ -1,5 +1,6 @@
 package com.mxttiaa.mcounter;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -93,6 +94,17 @@ public class MainActivity extends AppCompatActivity {
 
         Button resetBotton = findViewById(R.id.resetButt);
         resetBotton.setOnClickListener(v -> showDialogReset(mainLayout, textValue));
+
+        //Pulsante Settings
+        Button settingsBotton = findViewById(R.id.settingsButt);
+        settingsBotton.setOnClickListener(v ->{
+            // Creiamo l'Intent
+            // Argomenti: (Dove sono ora, Dove voglio andare)
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+
+            // Diciamo ad Android di eseguire l'ordine
+            startActivity(intent);
+        });
     }
 
     private void changeColorBackg(int value, View mainLayout){
