@@ -54,6 +54,19 @@ public class SettingsActivity extends AppCompatActivity {
         mainSettingsLayout.setBackgroundColor(ContextCompat.getColor(this, coloreDaUsare));
 
         MaterialToolbar toolbar = findViewById(R.id.toolbarSettings);
+
+        ViewCompat.setOnApplyWindowInsetsListener(mainSettingsLayout, (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+
+            // 1. Al layout principale diamo solo il padding laterale e IN BASSO
+            v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
+
+            // 2. Alla Toolbar diamo il padding IN ALTO (pari alla barra di stato)
+            toolbar.setPadding(0, systemBars.top, 0, 0);
+
+            return insets;
+        });
+
         setSupportActionBar(toolbar);
 
         // Questo abilita la freccetta in alto a sinistra

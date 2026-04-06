@@ -10,9 +10,10 @@
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbarSettings"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="wrap_content"
         app:elevation="4dp"
         android:background="@color/steelBlue"
+        android:minHeight="?attr/actionBarSize"
         app:title="Impostazioni"
         app:titleTextColor="@color/deepSpaceBlue"
 
