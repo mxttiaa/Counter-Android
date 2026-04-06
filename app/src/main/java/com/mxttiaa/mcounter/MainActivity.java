@@ -39,8 +39,11 @@ public class MainActivity extends AppCompatActivity {
             R.color.lightVanilla
     };
 
-    // In questo modo "sopravvive" tra un click e l'altro
-    private int lastIdxCloolor = -1;
+    // Cambia da -1 a 0
+    private int lastIdxCloolor = 0;
+
+    // E inizializza myColor con il primo elemento dell'array
+    int myColor = lightbackg[0];
     private final java.util.Random random = new java.util.Random();
 
     @Override
@@ -102,6 +105,14 @@ public class MainActivity extends AppCompatActivity {
             // Argomenti: (Dove sono ora, Dove voglio andare)
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
 
+            //Invio del colore dello sfondo
+            // "Mettiamo nella busta" il colore attuale
+            // Usiamo una "chiave" (un nome) per ritrovarlo dopo: "IDX_COLOR"
+            intent.putExtra("IDX_COLOR", lastIdxCloolor);
+
+            // Mettiamo anche il "salto" attuale (il gap)
+            intent.putExtra("CURRENT_GAP", gap);
+
             // Diciamo ad Android di eseguire l'ordine
             startActivity(intent);
         });
@@ -118,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
 
             lastIdxCloolor = idxCoolor;
 
-            int myColor = lightbackg[idxCoolor];
+            myColor = lightbackg[idxCoolor];
             //colore estratto
 
             // Nota: in Android moderno serve "ContextCompat" per tradurre il colore in un formato leggibile dallo schermo
