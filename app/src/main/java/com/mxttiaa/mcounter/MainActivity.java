@@ -17,7 +17,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 
 public class MainActivity extends AppCompatActivity {
-    int value = 0;
+    private Counter miocontatore;
     int gap = 1;
 
     int[] lightbackg = {
@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        miocontatore = new Counter(0, 0, 99999);
+
         TextView textValue = findViewById(R.id.valueCounter);
 
         View mainLayout = findViewById(R.id.main);
@@ -67,12 +69,11 @@ public class MainActivity extends AppCompatActivity {
 
         Button plusBotton = findViewById(R.id.plus);
         plusBotton.setOnClickListener(v ->{
-            if(value + gap <= 99999){
-                value += gap;
-                textValue.setText(String.valueOf(value));
-                //si può fare anche value + ""
+            if(miocontatore.increment(gap)){
+                textValue.setText(String.valueOf(miocontatore.getValue()));
+                //si può fare anche miocontatore.getValue() + ""
 
-                changeColorBackg(value, mainLayout);
+                changeColorBackg(mainLayout);
                 //cambia colore dello sfondo ogni 10
             }
             else{
@@ -82,12 +83,11 @@ public class MainActivity extends AppCompatActivity {
 
         Button minusBotton = findViewById(R.id.minus);
         minusBotton.setOnClickListener(v ->{
-            if(value - gap >= 0){
-                value -= gap;
-                textValue.setText(String.valueOf(value));
-                //si può fare anche value + ""
+            if(miocontatore.decrement(gap)){
+                textValue.setText(String.valueOf(miocontatore.getValue()));
+                //si può fare anche miocontatore.getValue() + ""
 
-                changeColorBackg(value, mainLayout);
+                changeColorBackg(mainLayout);
                 //cambia colore dello sfondo ogni 10
             }
             else{
@@ -118,7 +118,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void changeColorBackg(int value, View mainLayout){
+    private void changeColorBackg(View mainLayout){
+        int value = miocontatore.getValue();
         if (value > 0 && value % 10 == 0) {
             int idxCoolor;
 
@@ -151,8 +152,8 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("Conferma", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which){
-                value = 0;
-                textValue.setText(String.valueOf(value));
+                miocontatore.reset();
+                textValue.setText(String.valueOf(miocontatore.getValue()));
                 mainLayout.setBackgroundColor(androidx.core.content.ContextCompat.getColor(MainActivity.this, lightbackg[0]));
             }
         });
