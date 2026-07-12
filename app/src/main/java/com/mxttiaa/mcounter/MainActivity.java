@@ -8,7 +8,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-// 1. IMPORTANTE: Servono questi due nuovi import per gestire il ritorno dei dati
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,7 +22,10 @@ public class MainActivity extends AppCompatActivity {
     private Counter miocontatore;
     int gap = 1;
 
-    // 2. DICHIARIAMO IL RICEVITORE: Diventa una variabile della classe
+    // 1. NUOVE VARIABILI DI STATO per gestire la feature del cambio colore
+    private boolean isColorChangeEnabled = true;
+    private int colorChangeInterval = 10;
+
     private ActivityResultLauncher<Intent> settingsLauncher;
 
     int[] lightbackg = {
@@ -67,17 +69,18 @@ public class MainActivity extends AppCompatActivity {
         TextView textValue = findViewById(R.id.valueCounter);
         View mainLayout = findViewById(R.id.main);
 
-        // 3. REGISTRIAMO IL RICEVITORE: Va fatto OBBLIGATORIAMENTE dentro l'onCreate, prima che l'activity parta
+        // 2. AGGIORNAMENTO RICEVITORE: Intercettiamo i due nuovi valori di ritorno
         settingsLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    // Controlliamo che l'utente sia tornato salvando (RESULT_OK) e che il pacchetto non sia vuoto
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                        // Estraiamo il nuovo gap inserito dall'utente. Se non trova nulla, tiene il valore attuale di gap
                         gap = result.getData().getIntExtra("NEW_GAP", gap);
 
-                        // Opzionale: un piccolo messaggio a schermo che conferma il cambio
-                        Toast.makeText(this, "Salto aggiornato a: " + gap, Toast.LENGTH_SHORT).show();
+                        // Raccogliamo le nuove preferenze sul cambio colore
+                        isColorChangeEnabled = result.getData().getBooleanExtra("NEW_COLOR_ENABLED", isColorChangeEnabled);
+                        colorChangeInterval = result.getData().getIntExtra("NEW_COLOR_INTERVAL", colorChangeInterval);
+
+                        Toast.makeText(this, "Impostazioni applicate!", Toast.LENGTH_SHORT).show();
                     }
                 }
         );
@@ -112,14 +115,24 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("IDX_COLOR", lastIdxCloolor);
             intent.putExtra("CURRENT_GAP", gap);
 
-            // 4. LA PAROLA MAGICA: Sostituiamo startActivity(intent) con il lancio tramite il ricevitore
+            // 3. SPEDIAMO LE CONFIGURAZIONI: Mettiamo nella busta i valori correnti del colore
+            intent.putExtra("COLOR_ENABLED", isColorChangeEnabled);
+            intent.putExtra("COLOR_INTERVAL", colorChangeInterval);
+
             settingsLauncher.launch(intent);
         });
     }
 
+    // 4. NUOVA LOGICA DI CAMBIO COLORE: condizionata dalle scelte nelle impostazioni
     private void changeColorBackg(View mainLayout){
+        // Se l'utente ha disattivato la funzione dalle impostazioni, usciamo subito
+        if (!isColorChangeEnabled) {
+            return;
+        }
+
         int value = miocontatore.getValue();
-        if (value > 0 && value % 10 == 0) {
+        // Sostituiamo il vecchio valore fisso '10' con la variabile colorChangeInterval
+        if (value > 0 && value % colorChangeInterval == 0) {
             int idxCoolor;
             do {
                 idxCoolor = random.nextInt(lightbackg.length);
@@ -138,7 +151,6 @@ public class MainActivity extends AppCompatActivity {
         int colorSteelBlue = androidx.core.content.ContextCompat.getColor(this, R.color.steelBlue);
         int colorStrawberryRed = androidx.core.content.ContextCompat.getColor(this, R.color.strawberryRed);
 
-        // Impostiamo il colore dei testi interni
         android.text.SpannableString titleText = new android.text.SpannableString("Conferma Reset");
         titleText.setSpan(new android.text.style.ForegroundColorSpan(colorDeepSpaceBlue), 0, titleText.length(), 0);
         builder.setTitle(titleText);
@@ -170,48 +182,38 @@ public class MainActivity extends AppCompatActivity {
         }
 
         dialog.setOnShowListener(dialogInterface -> {
-            // Conversione dei pixel per il padding interno dei pulsanti (12dp sopra/sotto, 24dp lati)
             int paddingVertical = (int) (12 * getResources().getDisplayMetrics().density);
             int paddingHorizontal = (int) (24 * getResources().getDisplayMetrics().density);
 
-            // ==========================================
-            // TASTO CONFERMA
-            // ==========================================
             Button positiveButton = dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE);
             if (positiveButton != null) {
-                // Sblocca il background del MaterialButton nativo
                 positiveButton.setBackgroundTintList(null);
                 positiveButton.setTextColor(colorDeepSpaceBlue);
 
                 android.graphics.drawable.GradientDrawable shapePositive = new android.graphics.drawable.GradientDrawable();
                 shapePositive.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
                 shapePositive.setCornerRadius(30);
-                shapePositive.setColor(colorStrawberryRed); // Sfondo Rosso
-                shapePositive.setStroke((int) (3 * getResources().getDisplayMetrics().density), colorDeepSpaceBlue); // Bordo Blu Scuro
+                shapePositive.setColor(colorStrawberryRed);
+                shapePositive.setStroke((int) (3 * getResources().getDisplayMetrics().density), colorDeepSpaceBlue);
 
                 positiveButton.setBackground(shapePositive);
                 positiveButton.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
             }
 
-            // ==========================================
-            // TASTO ANNULLA (Invertito)
-            // ==========================================
             Button negativeButton = dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE);
             if (negativeButton != null) {
-                // Sblocca il background del MaterialButton nativo
                 negativeButton.setBackgroundTintList(null);
-                negativeButton.setTextColor(colorSteelBlue); // Scritta colore del Dialog
+                negativeButton.setTextColor(colorSteelBlue);
 
                 android.graphics.drawable.GradientDrawable shapeNegative = new android.graphics.drawable.GradientDrawable();
                 shapeNegative.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
                 shapeNegative.setCornerRadius(30);
-                shapeNegative.setColor(colorDeepSpaceBlue); // Sfondo Blu Scuro
-                shapeNegative.setStroke((int) (3 * getResources().getDisplayMetrics().density), colorDeepSpaceBlue); // Bordo Blu Scuro
+                shapeNegative.setColor(colorDeepSpaceBlue);
+                shapeNegative.setStroke((int) (3 * getResources().getDisplayMetrics().density), colorDeepSpaceBlue);
 
                 negativeButton.setBackground(shapeNegative);
                 negativeButton.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
 
-                // Distanziamo i due bottoni per non farli toccare
                 android.widget.LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams) negativeButton.getLayoutParams();
                 params.setMarginEnd((int) (16 * getResources().getDisplayMetrics().density));
                 negativeButton.setLayoutParams(params);
