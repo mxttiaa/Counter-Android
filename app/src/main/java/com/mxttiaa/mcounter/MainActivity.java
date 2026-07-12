@@ -1,6 +1,8 @@
 package com.mxttiaa.mcounter;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -22,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
     private Counter miocontatore;
     int gap = 1;
 
-    // 1. NUOVE VARIABILI DI STATO per gestire la feature del cambio colore
     private boolean isColorChangeEnabled = true;
     private int colorChangeInterval = 10;
 
@@ -51,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
     int myColor = lightbackg[0];
     private final java.util.Random random = new java.util.Random();
 
+    // Nome del file di salvataggio locale
+    private static final String PREFS_NAME = "MCounterPrefs";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         androidx.core.splashscreen.SplashScreen.installSplashScreen(this);
@@ -65,20 +69,35 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        miocontatore = new Counter(0, 0, 99999);
+        // 1. CARICAMENTO DATI SALVATI dalle SharedPreferences
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        int valoreSalvato = prefs.getInt("COUNTER_VALUE", 0);
+        gap = prefs.getInt("GAP_VALUE", 1);
+        isColorChangeEnabled = prefs.getBoolean("COLOR_ENABLED", true);
+        colorChangeInterval = prefs.getInt("COLOR_INTERVAL", 10);
+        lastIdxCloolor = prefs.getInt("COLOR_INDEX", 0);
+        myColor = lightbackg[lastIdxCloolor];
+
+        // Inizializziamo il contatore con il valore recuperato dal salvataggio
+        miocontatore = new Counter(valoreSalvato, 0, 99999);
+
         TextView textValue = findViewById(R.id.valueCounter);
         View mainLayout = findViewById(R.id.main);
 
-        // 2. AGGIORNAMENTO RICEVITORE: Intercettiamo i due nuovi valori di ritorno
+        // Mostriamo i dati recuperati a schermo
+        textValue.setText(String.valueOf(miocontatore.getValue()));
+        mainLayout.setBackgroundColor(androidx.core.content.ContextCompat.getColor(MainActivity.this, myColor));
+
         settingsLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         gap = result.getData().getIntExtra("NEW_GAP", gap);
-
-                        // Raccogliamo le nuove preferenze sul cambio colore
                         isColorChangeEnabled = result.getData().getBooleanExtra("NEW_COLOR_ENABLED", isColorChangeEnabled);
                         colorChangeInterval = result.getData().getIntExtra("NEW_COLOR_INTERVAL", colorChangeInterval);
+
+                        // Salviamo subito le nuove impostazioni ricevute
+                        salvaStatoApp();
 
                         Toast.makeText(this, "Impostazioni applicate!", Toast.LENGTH_SHORT).show();
                     }
@@ -90,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
             if(miocontatore.increment(gap)){
                 textValue.setText(String.valueOf(miocontatore.getValue()));
                 changeColorBackg(mainLayout);
+                salvaStatoApp(); // Salviamo dopo ogni incremento
             } else {
                 Toast.makeText(MainActivity.this, "Hai raggiunto il massimo.", Toast.LENGTH_SHORT).show();
             }
@@ -100,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
             if(miocontatore.decrement(gap)){
                 textValue.setText(String.valueOf(miocontatore.getValue()));
                 changeColorBackg(mainLayout);
+                salvaStatoApp(); // Salviamo dopo ogni decremento
             } else {
                 Toast.makeText(MainActivity.this, "Hai già raggiunto lo zero.", Toast.LENGTH_SHORT).show();
             }
@@ -108,30 +129,37 @@ public class MainActivity extends AppCompatActivity {
         Button resetBotton = findViewById(R.id.resetButt);
         resetBotton.setOnClickListener(v -> showDialogReset(mainLayout, textValue));
 
-        // Pulsante Settings
         Button settingsBotton = findViewById(R.id.settingsButt);
         settingsBotton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             intent.putExtra("IDX_COLOR", lastIdxCloolor);
             intent.putExtra("CURRENT_GAP", gap);
-
-            // 3. SPEDIAMO LE CONFIGURAZIONI: Mettiamo nella busta i valori correnti del colore
             intent.putExtra("COLOR_ENABLED", isColorChangeEnabled);
             intent.putExtra("COLOR_INTERVAL", colorChangeInterval);
-
             settingsLauncher.launch(intent);
         });
     }
 
-    // 4. NUOVA LOGICA DI CAMBIO COLORE: condizionata dalle scelte nelle impostazioni
+    // 2. METODO DI SALVATAGGIO: Scrive i dati nell'archivio locale
+    private void salvaStatoApp() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        editor.putInt("COUNTER_VALUE", miocontatore.getValue());
+        editor.putInt("GAP_VALUE", gap);
+        editor.putBoolean("COLOR_ENABLED", isColorChangeEnabled);
+        editor.putInt("COLOR_INTERVAL", colorChangeInterval);
+        editor.putInt("COLOR_INDEX", lastIdxCloolor);
+
+        editor.apply(); // Conferma e applica i salvataggi in background
+    }
+
     private void changeColorBackg(View mainLayout){
-        // Se l'utente ha disattivato la funzione dalle impostazioni, usciamo subito
         if (!isColorChangeEnabled) {
             return;
         }
 
         int value = miocontatore.getValue();
-        // Sostituiamo il vecchio valore fisso '10' con la variabile colorChangeInterval
         if (value > 0 && value % colorChangeInterval == 0) {
             int idxCoolor;
             do {
@@ -164,7 +192,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which){
                 miocontatore.reset();
                 textValue.setText(String.valueOf(miocontatore.getValue()));
-                mainLayout.setBackgroundColor(androidx.core.content.ContextCompat.getColor(MainActivity.this, lightbackg[0]));
+                lastIdxCloolor = 0; // Resettiamo anche l'indice del colore allo stato iniziale
+                myColor = lightbackg[0];
+                mainLayout.setBackgroundColor(androidx.core.content.ContextCompat.getColor(MainActivity.this, myColor));
+
+                salvaStatoApp(); // Salviamo lo stato azzerato
             }
         });
 
