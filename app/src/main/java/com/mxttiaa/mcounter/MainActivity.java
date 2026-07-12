@@ -132,9 +132,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showDialogReset(View mainLayout, TextView textValue){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Conferma Reset");
-        builder.setMessage("Sei sicuro di voler resettare il contatore?");
+        com.google.android.material.dialog.MaterialAlertDialogBuilder builder = new com.google.android.material.dialog.MaterialAlertDialogBuilder(this);
+
+        int colorDeepSpaceBlue = androidx.core.content.ContextCompat.getColor(this, R.color.deepSpaceBlue);
+        int colorSteelBlue = androidx.core.content.ContextCompat.getColor(this, R.color.steelBlue);
+        int colorStrawberryRed = androidx.core.content.ContextCompat.getColor(this, R.color.strawberryRed);
+
+        // Impostiamo il colore dei testi interni
+        android.text.SpannableString titleText = new android.text.SpannableString("Conferma Reset");
+        titleText.setSpan(new android.text.style.ForegroundColorSpan(colorDeepSpaceBlue), 0, titleText.length(), 0);
+        builder.setTitle(titleText);
+
+        android.text.SpannableString messageText = new android.text.SpannableString("Sei sicuro di voler resettare il contatore?");
+        messageText.setSpan(new android.text.style.ForegroundColorSpan(colorDeepSpaceBlue), 0, messageText.length(), 0);
+        builder.setMessage(messageText);
 
         builder.setPositiveButton("Conferma", new DialogInterface.OnClickListener() {
             @Override
@@ -152,7 +163,61 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        AlertDialog dialog = builder.create();
+        androidx.appcompat.app.AlertDialog dialog = builder.create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_custom_background);
+        }
+
+        dialog.setOnShowListener(dialogInterface -> {
+            // Conversione dei pixel per il padding interno dei pulsanti (12dp sopra/sotto, 24dp lati)
+            int paddingVertical = (int) (12 * getResources().getDisplayMetrics().density);
+            int paddingHorizontal = (int) (24 * getResources().getDisplayMetrics().density);
+
+            // ==========================================
+            // TASTO CONFERMA
+            // ==========================================
+            Button positiveButton = dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE);
+            if (positiveButton != null) {
+                // Sblocca il background del MaterialButton nativo
+                positiveButton.setBackgroundTintList(null);
+                positiveButton.setTextColor(colorDeepSpaceBlue);
+
+                android.graphics.drawable.GradientDrawable shapePositive = new android.graphics.drawable.GradientDrawable();
+                shapePositive.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
+                shapePositive.setCornerRadius(30);
+                shapePositive.setColor(colorStrawberryRed); // Sfondo Rosso
+                shapePositive.setStroke((int) (3 * getResources().getDisplayMetrics().density), colorDeepSpaceBlue); // Bordo Blu Scuro
+
+                positiveButton.setBackground(shapePositive);
+                positiveButton.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
+            }
+
+            // ==========================================
+            // TASTO ANNULLA (Invertito)
+            // ==========================================
+            Button negativeButton = dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE);
+            if (negativeButton != null) {
+                // Sblocca il background del MaterialButton nativo
+                negativeButton.setBackgroundTintList(null);
+                negativeButton.setTextColor(colorSteelBlue); // Scritta colore del Dialog
+
+                android.graphics.drawable.GradientDrawable shapeNegative = new android.graphics.drawable.GradientDrawable();
+                shapeNegative.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
+                shapeNegative.setCornerRadius(30);
+                shapeNegative.setColor(colorDeepSpaceBlue); // Sfondo Blu Scuro
+                shapeNegative.setStroke((int) (3 * getResources().getDisplayMetrics().density), colorDeepSpaceBlue); // Bordo Blu Scuro
+
+                negativeButton.setBackground(shapeNegative);
+                negativeButton.setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
+
+                // Distanziamo i due bottoni per non farli toccare
+                android.widget.LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams) negativeButton.getLayoutParams();
+                params.setMarginEnd((int) (16 * getResources().getDisplayMetrics().density));
+                negativeButton.setLayoutParams(params);
+            }
+        });
+
         dialog.show();
     }
 }
