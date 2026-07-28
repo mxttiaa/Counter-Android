@@ -2,7 +2,7 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <!-- Lo sfondo uguale ai tasti più e meno -->
-    <solid android:color="@color/steelBlue" />
+    <solid android:color="@color/honeydew" />
 
     <!-- Il bordo con lo stesso spessore e colore dei tasti più e meno -->
     <stroke

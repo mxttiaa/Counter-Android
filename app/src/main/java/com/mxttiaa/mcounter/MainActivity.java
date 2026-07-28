@@ -13,11 +13,11 @@ import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,6 +26,9 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isColorChangeEnabled = true;
     private int colorChangeInterval = 10;
+
+    // Indice del colore fisso scelto dall'utente
+    private int mainColorIndex = 0;
 
     private ActivityResultLauncher<Intent> settingsLauncher;
 
@@ -61,9 +64,13 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+
         setContentView(R.layout.activity_main);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        View mainLayout = findViewById(R.id.main);
+        TextView textValue = findViewById(R.id.valueCounter);
+
+        ViewCompat.setOnApplyWindowInsetsListener(mainLayout, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
@@ -76,18 +83,23 @@ public class MainActivity extends AppCompatActivity {
         isColorChangeEnabled = prefs.getBoolean("COLOR_ENABLED", true);
         colorChangeInterval = prefs.getInt("COLOR_INTERVAL", 10);
         lastIdxCloolor = prefs.getInt("COLOR_INDEX", 0);
-        myColor = lightbackg[lastIdxCloolor];
+        mainColorIndex = prefs.getInt("MAIN_COLOR_INDEX", 0);
+
+        // Determiniamo il colore di sfondo iniziale da applicare
+        if (isColorChangeEnabled) {
+            myColor = lightbackg[lastIdxCloolor];
+        } else {
+            myColor = lightbackg[mainColorIndex];
+        }
 
         // Inizializziamo il contatore con il valore recuperato dal salvataggio
         miocontatore = new Counter(valoreSalvato, 0, 99999);
 
-        TextView textValue = findViewById(R.id.valueCounter);
-        View mainLayout = findViewById(R.id.main);
-
         // Mostriamo i dati recuperati a schermo
         textValue.setText(String.valueOf(miocontatore.getValue()));
-        mainLayout.setBackgroundColor(androidx.core.content.ContextCompat.getColor(MainActivity.this, myColor));
+        mainLayout.setBackgroundColor(ContextCompat.getColor(MainActivity.this, myColor));
 
+        // 2. RICEZIONE DATI DA SettingsActivity
         settingsLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -95,18 +107,25 @@ public class MainActivity extends AppCompatActivity {
                         gap = result.getData().getIntExtra("NEW_GAP", gap);
                         isColorChangeEnabled = result.getData().getBooleanExtra("NEW_COLOR_ENABLED", isColorChangeEnabled);
                         colorChangeInterval = result.getData().getIntExtra("NEW_COLOR_INTERVAL", colorChangeInterval);
+                        mainColorIndex = result.getData().getIntExtra("NEW_MAIN_COLOR_INDEX", mainColorIndex);
+
+                        // Aggiorniamo sempre lo sfondo al ritorno in base allo stato dello switch!
+                        if (isColorChangeEnabled) {
+                            myColor = lightbackg[lastIdxCloolor];
+                        } else {
+                            myColor = lightbackg[mainColorIndex];
+                        }
+                        mainLayout.setBackgroundColor(ContextCompat.getColor(MainActivity.this, myColor));
 
                         // Salviamo subito le nuove impostazioni ricevute
                         salvaStatoApp();
-
-                        Toast.makeText(this, "Impostazioni applicate!", Toast.LENGTH_SHORT).show();
                     }
                 }
         );
 
         Button plusBotton = findViewById(R.id.plus);
         plusBotton.setOnClickListener(v -> {
-            if(miocontatore.increment(gap)){
+            if (miocontatore.increment(gap)) {
                 textValue.setText(String.valueOf(miocontatore.getValue()));
                 changeColorBackg(mainLayout);
                 salvaStatoApp(); // Salviamo dopo ogni incremento
@@ -117,12 +136,12 @@ public class MainActivity extends AppCompatActivity {
 
         Button minusBotton = findViewById(R.id.minus);
         minusBotton.setOnClickListener(v -> {
-            if(miocontatore.decrement(gap)){
+            if (miocontatore.decrement(gap)) {
                 textValue.setText(String.valueOf(miocontatore.getValue()));
                 changeColorBackg(mainLayout);
                 salvaStatoApp(); // Salviamo dopo ogni decremento
             } else {
-                Toast.makeText(MainActivity.this, "Hai già raggiunto lo zero.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Hai già raggiunto il minimo.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -136,11 +155,12 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("CURRENT_GAP", gap);
             intent.putExtra("COLOR_ENABLED", isColorChangeEnabled);
             intent.putExtra("COLOR_INTERVAL", colorChangeInterval);
+            intent.putExtra("MAIN_COLOR_INDEX", mainColorIndex);
             settingsLauncher.launch(intent);
         });
     }
 
-    // 2. METODO DI SALVATAGGIO: Scrive i dati nell'archivio locale
+    // 3. METODO DI SALVATAGGIO
     private void salvaStatoApp() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -150,11 +170,12 @@ public class MainActivity extends AppCompatActivity {
         editor.putBoolean("COLOR_ENABLED", isColorChangeEnabled);
         editor.putInt("COLOR_INTERVAL", colorChangeInterval);
         editor.putInt("COLOR_INDEX", lastIdxCloolor);
+        editor.putInt("MAIN_COLOR_INDEX", mainColorIndex);
 
-        editor.apply(); // Conferma e applica i salvataggi in background
+        editor.apply();
     }
 
-    private void changeColorBackg(View mainLayout){
+    private void changeColorBackg(View mainLayout) {
         if (!isColorChangeEnabled) {
             return;
         }
@@ -164,20 +185,21 @@ public class MainActivity extends AppCompatActivity {
             int idxCoolor;
             do {
                 idxCoolor = random.nextInt(lightbackg.length);
-            } while(idxCoolor == lastIdxCloolor);
+            } while (idxCoolor == lastIdxCloolor);
 
             lastIdxCloolor = idxCoolor;
             myColor = lightbackg[idxCoolor];
-            mainLayout.setBackgroundColor(androidx.core.content.ContextCompat.getColor(MainActivity.this, myColor));
+            mainLayout.setBackgroundColor(ContextCompat.getColor(MainActivity.this, myColor));
         }
     }
 
-    private void showDialogReset(View mainLayout, TextView textValue){
+    // 4. DIALOG DI RESET CON LOGICA CONDIZIONALE
+    private void showDialogReset(View mainLayout, TextView textValue) {
         com.google.android.material.dialog.MaterialAlertDialogBuilder builder = new com.google.android.material.dialog.MaterialAlertDialogBuilder(this);
 
-        int colorDeepSpaceBlue = androidx.core.content.ContextCompat.getColor(this, R.color.deepSpaceBlue);
-        int colorSteelBlue = androidx.core.content.ContextCompat.getColor(this, R.color.steelBlue);
-        int colorStrawberryRed = androidx.core.content.ContextCompat.getColor(this, R.color.strawberryRed);
+        int colorDeepSpaceBlue = ContextCompat.getColor(this, R.color.deepSpaceBlue);
+        int colorSteelBlue = ContextCompat.getColor(this, R.color.steelBlue);
+        int colorStrawberryRed = ContextCompat.getColor(this, R.color.strawberryRed);
 
         android.text.SpannableString titleText = new android.text.SpannableString("Conferma Reset");
         titleText.setSpan(new android.text.style.ForegroundColorSpan(colorDeepSpaceBlue), 0, titleText.length(), 0);
@@ -189,14 +211,19 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setPositiveButton("Conferma", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which){
+            public void onClick(DialogInterface dialog, int which) {
                 miocontatore.reset();
                 textValue.setText(String.valueOf(miocontatore.getValue()));
-                lastIdxCloolor = 0; // Resettiamo anche l'indice del colore allo stato iniziale
-                myColor = lightbackg[0];
-                mainLayout.setBackgroundColor(androidx.core.content.ContextCompat.getColor(MainActivity.this, myColor));
 
-                salvaStatoApp(); // Salviamo lo stato azzerato
+                if (isColorChangeEnabled) {
+                    lastIdxCloolor = 0;
+                    myColor = lightbackg[0];
+                } else {
+                    myColor = lightbackg[mainColorIndex];
+                }
+                mainLayout.setBackgroundColor(ContextCompat.getColor(MainActivity.this, myColor));
+
+                salvaStatoApp();
             }
         });
 
