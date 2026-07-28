@@ -8,6 +8,7 @@ Applicazione Android moderna e minimalista per il conteggio personalizzato, svil
 * **Navigazione Integrata:** Supporto nativo ai gesti di navigazione Android (`OnBackPressedDispatcher`) per salvare automaticamente le preferenze anche uscendo con swipe o tasto indietro.
 * **Reset Intelligente:** Il reset azzera il contatore ma preserva il colore fisso scelto dall'utente se il cambio automatico è disattivato.
 * **UI & UX Refinement:** Dialog di reset riprogettato con sfondo `honeydew` ad alto contrasto per una migliore leggibilità.
+* **APK Firmato Ufficiale:** Rilasciata la prima versione firmata con chiave di produzione (Release).
 
 ## ⚙️ Funzionalità Principali
 
